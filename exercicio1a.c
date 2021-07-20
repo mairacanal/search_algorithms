@@ -77,5 +77,8 @@ int main(int argc, char const *argv[])
     printf("Tempo de busca    :\t%fs\n", tempo_busca);
     printf("Itens encontrados :\t%d\n", encontrados);
 
+    free(entradas);
+    free(consultas);
+
     return 0;
 }
