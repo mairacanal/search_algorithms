@@ -76,7 +76,7 @@ unsigned h_mul(unsigned x, unsigned i, unsigned B)
 
 unsigned h_duplo(unsigned x, unsigned i, unsigned B)
 {
-    return (h_mul(x,i,B) + i * h_div(x,i,B)) % B;
+    return (h_mul(x,0,B) + i * h_div(x,0,B)) % B;
 }
 
 // DESENVOLVIDA PELO GRUPO ================================================================================
@@ -89,21 +89,19 @@ void criar_hash(Hash *hash, unsigned B)
         hash->tabela[i] = NULL;
 }
 
-unsigned inserir_hash(Hash *hash, string elemento) 
+int inserir_hash(Hash *hash, string elemento) 
 {
     unsigned pos;
-    unsigned colisao = 0;
     unsigned key = converter(elemento);
 
     for (int i = 0; i < hash->B; i++) 
     {
         pos = h_duplo(key, i, hash->B);
-        colisao = i;
 
         if (hash->tabela[pos] == NULL) {
             hash->tabela[pos] = (string) malloc(MAX_STRING_LEN * sizeof(char));
             strcpy(hash->tabela[pos], elemento);
-            return colisao;
+            return i;
         }
 
         if (!strcmp(hash->tabela[pos], elemento))
@@ -113,7 +111,7 @@ unsigned inserir_hash(Hash *hash, string elemento)
     return -1;
 }
 
-unsigned buscar_hash(Hash *hash, string elemento)
+int buscar_hash(Hash *hash, string elemento)
 {
     unsigned pos;
     unsigned key = converter(elemento);

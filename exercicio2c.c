@@ -106,18 +106,19 @@ int buscar_node(No *no, string elemento)
     return buscar_node(no->proximo, elemento);
 }
 
-unsigned inserir_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned)) 
+int inserir_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned)) 
 {
-    unsigned colisao = 0;
+    int colisao = 0;
     unsigned key = converter(elemento);
     unsigned pos = funcao_hash(key, hash->B);
 
-    if (hash->tabela[pos] == NULL) 
-    {
+    if (!buscar_node(hash->tabela[pos], elemento))
+        return colisao;
+
+    if (hash->tabela[pos] == NULL) {
         hash->tabela[pos] = (No *) malloc(sizeof(No));
         hash->tabela[pos]->proximo = NULL;
-    } 
-    else colisao = 1;
+    } else colisao = 1; 
 
     inserir_node(&(hash->tabela[pos]), elemento);
 

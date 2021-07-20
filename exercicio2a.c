@@ -83,31 +83,29 @@ void criar_hash(Hash *hash, unsigned B)
         hash->tabela[i] = NULL;
 }
 
-unsigned inserir_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned, unsigned)) 
+int inserir_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned, unsigned)) 
 {
     unsigned pos;
-    unsigned colisao = 0;
     unsigned key = converter(elemento);
 
     for (int i = 0; i < hash->B; i++) 
     {
         pos = funcao_hash(key, i, hash->B);
-        colisao = i;
 
         if (hash->tabela[pos] == NULL) {
             hash->tabela[pos] = (string) malloc(MAX_STRING_LEN * sizeof(char));
             strcpy(hash->tabela[pos], elemento);
-            return colisao;
+            return i;
         }
 
-        if (!strcmp(hash->tabela[pos], elemento))
+        if (!strcmp(hash->tabela[pos], elemento)) 
             return -1;
     }
 
     return -1;
 }
 
-unsigned buscar_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned, unsigned))
+int buscar_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned, unsigned))
 {
     unsigned pos;
     unsigned key = converter(elemento);
