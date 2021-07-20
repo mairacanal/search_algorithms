@@ -18,10 +18,14 @@ typedef char *string;
 
 #define MAX_STRING_LEN 20
 
+// DESENVOLVIDA PELO GRUPO ================================================================================
+
 typedef struct {
     unsigned B;
     string *tabela;
 } Hash;
+
+// ========================================================================================================
 
 unsigned converter(string s) {
    unsigned h = 0;
@@ -74,6 +78,8 @@ unsigned h_duplo(unsigned x, unsigned i, unsigned B)
 {
     return (h_mul(x,i,B) + i * h_div(x,i,B)) % B;
 }
+
+// DESENVOLVIDA PELO GRUPO ================================================================================
 
 void criar_hash(Hash *hash, unsigned B)
 {
@@ -132,6 +138,8 @@ void liberar_hash(Hash *hash)
         free(hash->tabela[i]);
     free(hash->tabela);
 }
+
+// ========================================================================================================
 
 int main(int argc, char const *argv[])
 {

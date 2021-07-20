@@ -10,10 +10,14 @@ unsigned char typedef bool;
 #define TRUE  1
 #define FALSE 0
 
+// DESENVOLVIDA PELO GRUPO ================================================================================
+
 typedef struct {
     int kindex;
     int pos;
 } TabelaIndice;
+
+// ========================================================================================================
 
 int* ler_inteiros(const char * arquivo, const int n)
 {
@@ -123,6 +127,7 @@ int busca_sequencial_indexada(int* tabela, TabelaIndice* tabelaIndice, int eleme
     return -1;
 
 }
+
 // ========================================================================================================
 
 int main(int argc, char const *argv[])
