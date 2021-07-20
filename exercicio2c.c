@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <string.h> // funções strcmp e strcpy
+#include <assert.h>
+#include <string.h>
 #include <math.h>
 
 // Definição das variaveis que controlam a medição de tempo
@@ -17,6 +18,15 @@ typedef char * string;
 
 #define MAX_STRING_LEN 20
 
+typedef struct no {
+    char key[MAX_STRING_LEN];
+    struct no *proximo;
+} No;
+
+typedef struct {
+    unsigned B;
+    No **tabela;
+} Hash;
 
 unsigned converter(string s) {
    unsigned h = 0;
@@ -53,23 +63,88 @@ double finaliza_tempo()
     return ((double) (_fim - _ini)) / CLOCKS_PER_SEC;
 }
 
-unsigned h_div(unsigned x, unsigned i, unsigned B)
+unsigned h_div(unsigned x, unsigned B)
 {
-    return ((x % B) + i) % B;
+    return x % B;
 }
 
-unsigned h_mul(unsigned x, unsigned i, unsigned B)
+unsigned h_mul(unsigned x, unsigned B)
 {
     const double A = 0.6180;
-    return  ((int) ((fmod(x * A, 1) * B) + i)) % B;
+    return fmod(x * A, 1) * B;
 }
 
+void criar_hash(Hash *hash, unsigned B)
+{
+    hash->B = B;
+    hash->tabela = (No **) malloc(B * sizeof(No*));
+    for (int i = 0; i < B; i++) 
+        hash->tabela[i] = NULL;
+}
+
+void inserir_node(No** raiz, string elemento) 
+{
+    No* novo_no = (No*) malloc(sizeof(No));
+
+    strcpy(novo_no->key, elemento);
+    novo_no->proximo = *raiz;
+    *raiz = novo_no;
+}
+
+int buscar_node(No *no, string elemento) 
+{
+    if (no == NULL)
+        return -1;
+    if (!strcmp(no->key, elemento))
+        return 0;
+    return buscar_node(no->proximo, elemento);
+}
+
+unsigned inserir_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned)) 
+{
+    unsigned colisao = 0;
+    unsigned key = converter(elemento);
+    unsigned pos = funcao_hash(key, hash->B);
+
+    if (hash->tabela[pos] == NULL) 
+    {
+        hash->tabela[pos] = (No *) malloc(sizeof(No));
+        hash->tabela[pos]->proximo = NULL;
+    } 
+    else colisao = 1;
+
+    inserir_node(&(hash->tabela[pos]), elemento);
+
+    return colisao;
+}
+
+int buscar_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned)) 
+{
+    unsigned key = converter(elemento);
+    unsigned pos = funcao_hash(key, hash->B);
+
+    return buscar_node(hash->tabela[pos], elemento);
+}
+
+void liberar_hash(Hash *hash)
+{
+    for (int i = 0; i < hash->B; i++) 
+    {
+        while (hash->tabela[i])
+        {
+            No* tmp = hash->tabela[i];
+            hash->tabela[i] = hash->tabela[i]->proximo;
+            free(tmp);
+        }
+    }
+    free(hash->tabela);
+}
 
 int main(int argc, char const *argv[])
 {
-    unsigned N = 50000;
-    unsigned M = 70000;
-    unsigned B = 150001;
+    const int N = 50000;
+    const int M = 70000;
+    const int B = 150001;
 
     unsigned colisoes_h_div = 0;
     unsigned colisoes_h_mul = 0;
@@ -80,47 +155,63 @@ int main(int argc, char const *argv[])
     string* insercoes = ler_strings("strings_entrada.txt", N);
     string* consultas = ler_strings("strings_busca.txt", M);
 
+    Hash hash;
 
     // cria tabela hash com hash por divisão
+    criar_hash(&hash, B);
 
     // inserção dos dados na tabela hash usando hash por divisão
     inicia_tempo();
     for (int i = 0; i < N; i++) {
+
         // inserir insercoes[i] na tabela hash
+        if (inserir_hash(&hash, insercoes[i], &h_div))
+            colisoes_h_div++;
+
     }
     double tempo_insercao_h_div = finaliza_tempo();
 
-    // consulta dos dados na tabela hash usando hash por divisão
+    // busca dos dados na tabela hash com hash por divisão
     inicia_tempo();
     for (int i = 0; i < M; i++) {
+        
         // buscar consultas[i] na tabela hash
+        if (buscar_hash(&hash, consultas[i], &h_div) != -1)
+            encontrados_h_div++;
+        
     }
     double tempo_busca_h_div = finaliza_tempo();
 
-    // limpa a tabela hash com hash por divisão
+    // destroi tabela hash com hash por divisão
+    liberar_hash(&hash);
 
+    // cria tabela hash com hash por multiplicação
+    criar_hash(&hash, B);
 
-
-
-    // cria tabela hash com hash por divisão
-
-    // inserção dos dados na tabela hash usando hash por multiplicação
+    // inserção dos dados na tabela hash com hash por multiplicação
     inicia_tempo();
     for (int i = 0; i < N; i++) {
+        
         // inserir insercoes[i] na tabela hash
+        if (inserir_hash(&hash, insercoes[i], &h_mul))
+            colisoes_h_mul++;
+
     }
     double tempo_insercao_h_mul = finaliza_tempo();
 
     // busca dos dados na tabela hash com hash por multiplicação
     inicia_tempo();
     for (int i = 0; i < M; i++) {
+        
         // buscar consultas[i] na tabela hash
+        if (buscar_hash(&hash, consultas[i], &h_mul) != -1)
+            encontrados_h_mul++;
+
     }
     double tempo_busca_h_mul = finaliza_tempo();
 
-    // limpa a tabela hash com hash por multiplicação
-
-
+    // destroi tabela hash com hash por multiplicação
+    liberar_hash(&hash);
 
     printf("Hash por Divisão\n");
     printf("Colisões na inserção: %d\n", colisoes_h_div);

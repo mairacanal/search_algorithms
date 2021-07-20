@@ -36,6 +36,25 @@ double finaliza_tempo()
     return ((double) (_fim - _ini)) / CLOCKS_PER_SEC;
 }
 
+// DESENVOLVIDA PELO GRUPO ================================================================================
+
+/*
+ * @brief Funcão que realiza uma busca sequencial simples no vetor (int* vetor) de tamanho (unsigned tamanho)
+ * buscando o elemento (int elemento)
+ * @return Retorna -1 se o elemento não existir no vetor e, caso contrário, retorna a posicão do elemento no 
+ * vetor
+*/
+
+int busca_sequencial_simples(int* vetor, int elemento, unsigned tamanho) 
+{
+    for (int i = 0; i < tamanho; i++) 
+        if (vetor[i] == elemento)
+            return i;
+    return -1;
+}
+
+// ========================================================================================================
+
 int main(int argc, char const *argv[])
 {
     const int N = 50000;
@@ -47,7 +66,11 @@ int main(int argc, char const *argv[])
     // realiza busca sequencial
     inicia_tempo();
     for (int i = 0; i < N; i++) {
+
         // buscar o elemento consultas[i] na entrada
+        if (busca_sequencial_simples(entradas, consultas[i], N) != -1)
+            encontrados++;
+
     }
     double tempo_busca = finaliza_tempo();
 
