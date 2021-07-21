@@ -1,3 +1,10 @@
+// ========================================================================================================
+//
+// @file exercicio2b.c
+// @authors Guilherme Mafra (N USP: 11272015), Luigi Quaglio (N USP: 11800563) and Maíra Canal (N USP: 11819403)
+//
+// ========================================================================================================
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -74,13 +81,21 @@ unsigned h_mul(unsigned x, unsigned i, unsigned B)
     return  ((int) ((fmod(x * A, 1) * B) + i)) % B;
 }
 
+// DESENVOLVIDA PELO GRUPO ================================================================================
+
+/*
+ * @brief Implementa uma funcão que relaciona as funções hash h_div e h_mul, de forma a criar uma funcão de 
+ * hash duplo
+ * @return Resultado do hash duplo
+ */
 unsigned h_duplo(unsigned x, unsigned i, unsigned B)
 {
     return (h_mul(x,0,B) + i * h_div(x,0,B)) % B;
 }
 
-// DESENVOLVIDA PELO GRUPO ================================================================================
-
+/*
+ * @brief Aloca memória da tabela hash e preenche todos os enderecos com NULL.
+ */
 void criar_hash(Hash *hash, unsigned B)
 {
     hash->B = B;
@@ -89,6 +104,12 @@ void criar_hash(Hash *hash, unsigned B)
         hash->tabela[i] = NULL;
 }
 
+/*
+ * @brief Insere elemento na tabela hash utilizando a funcao hash (unsigned h_duplo). Além disso, também
+ * realiza o tratamento de colisões por meio da técnica de hash duplo.
+ * @return Retorna -1 em caso de não conseguir inserir ou se o elemento já estiver na tabela hash. Caso contrário,
+ * retorna o número de vezes que iterou no loop (ou seja, se i > 0, houve colisão).
+ */
 int inserir_hash(Hash *hash, string elemento) 
 {
     unsigned pos;
@@ -111,6 +132,11 @@ int inserir_hash(Hash *hash, string elemento)
     return -1;
 }
 
+/*
+ * @brief Busca um elemento na tabela hash utilizando a funcão hash (unsigned h_duplo). Conforme a funcão inserir_hash,
+ * é utilizado a técnica de hash duplo.
+ * @return Retorna -1 se o elemento não existir. Caso o elemento exista, retorna a posicão do elemento.
+ */
 int buscar_hash(Hash *hash, string elemento)
 {
     unsigned pos;
@@ -130,6 +156,9 @@ int buscar_hash(Hash *hash, string elemento)
     return -1;
 }
 
+/*
+ * @brief Libera a memória alocada na tabela hash.
+ */
 void liberar_hash(Hash *hash)
 {
     for (int i = 0; i < hash->B; i++)
@@ -178,12 +207,17 @@ int main(int argc, char const *argv[])
     }
     double tempo_busca = finaliza_tempo();
 
+    // limpa a tabela hash 
     liberar_hash(&hash);
 
     printf("Colisões na inserção: %d\n", colisoes);
     printf("Tempo de inserção   : %fs\n", tempo_insercao);
     printf("Tempo de busca      : %fs\n", tempo_busca);
     printf("Itens encontrados   : %d\n", encontrados);
+
+    // Desaloca memória previamente alocada
+    free(insercoes);
+    free(consultas);
 
     return 0;
 }

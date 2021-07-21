@@ -1,3 +1,10 @@
+// ========================================================================================================
+//
+// @file exercicio1d.c
+// @authors Guilherme Mafra (N USP: 11272015), Luigi Quaglio (N USP: 11800563) and Maíra Canal (N USP: 11819403)
+//
+// ========================================================================================================
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -12,6 +19,10 @@ unsigned char typedef bool;
 
 // DESENVOLVIDA PELO GRUPO ================================================================================
 
+/*
+ * @brief Struct que representa a Tabela de índices que contém uma chave (int kindex) e um indicador de 
+ * registro no arquivo que corresponde a chave (int pos)
+ */
 typedef struct {
     int kindex;
     int pos;
@@ -52,6 +63,10 @@ double finaliza_tempo()
 
 // DESENVOLVIDA PELO GRUPO ================================================================================
 
+/*
+ * @brief Percorre o vetor linearmente buscando o maior elemento do vetor
+ * @return Retorna o maior elemento do vetor
+ */
 int maximo_elemento(Vetor *tabela) 
 {
     int max = 0;
@@ -62,6 +77,10 @@ int maximo_elemento(Vetor *tabela)
     return max;
 }
 
+/*
+ * @brief Funcão auxiliar do Radix Sort, a qual ordena individualmente cada dígito por meio do algoritmo de
+ * ordenacão Counting Sort
+ */
 void radix_counting_sort(Vetor *tabela, int posicao) 
 {
     int k = 10;
@@ -94,6 +113,9 @@ void radix_counting_sort(Vetor *tabela, int posicao)
     free(final);
 }
 
+/*
+ * @brief Método de Ordenacão Radix Sort, utilizado para ordenar chaves em domínios discretos
+ */
 void radix_sort(Vetor *tabela) 
 {
     int max = maximo_elemento(tabela);
@@ -102,20 +124,25 @@ void radix_sort(Vetor *tabela)
         radix_counting_sort(tabela, posicao);
 }
 
-TabelaIndice* criar_TabelaIndice(Vetor* tabela, int T) 
+/*
+ * @brief Aloca a memória da Tabela de Indices e preenche a tabela com os elementos 0, N/T, 2 * N/T, etc. 
+ * Dessa forma, cada elemento da Tabela de Indices representa N/T elementos da tabela.
+ * @return Retorna a Tabela de Indices
+ */
+void criar_TabelaIndice(TabelaIndice **tabelaIndice, Vetor* tabela, int T) 
 {
-    TabelaIndice* tabelaIndice;
-
-    tabelaIndice = (TabelaIndice *) malloc(T * sizeof(TabelaIndice));
+    *tabelaIndice = (TabelaIndice *) malloc(T * sizeof(TabelaIndice));
 
     for (int i = 0; i < T; i++) {
-        tabelaIndice[i].pos = i * (tabela->tamanho / T);
-        tabelaIndice[i].kindex = tabela->vetor[tabelaIndice[i].pos];
+        (*tabelaIndice)[i].pos = i * (tabela->tamanho / T);
+        (*tabelaIndice)[i].kindex = tabela->vetor[(*tabelaIndice)[i].pos];
     }
-
-    return tabelaIndice;
 }
 
+/*
+ * @brief Realiza a busca sequencial indexada
+ * @return Retorna -1 em caso de não encontrar o elemento. Caso contrário, retorna a posicão do elemento.
+ */
 int busca_sequencial_indexada(Vetor* tabela, TabelaIndice* tabelaIndice, int elemento, int T) 
 {
     int i;
@@ -156,7 +183,7 @@ int main(int argc, char const *argv[])
     radix_sort(&tabela);
 
     // criar tabela de indice
-    tabelaIndice = criar_TabelaIndice(&tabela, T);
+    criar_TabelaIndice(&tabelaIndice, &tabela, T);
 
     // realizar consultas na tabela de indices 
     inicia_tempo();
@@ -170,6 +197,7 @@ int main(int argc, char const *argv[])
     printf("Tempo de busca    :\t%fs\n", tempo_busca);
     printf("Itens encontrados :\t%d\n", encontrados);
 
+    // Liberando memória alocada
     free(entradas);
     free(consultas);
     free(tabelaIndice);

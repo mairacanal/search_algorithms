@@ -1,3 +1,10 @@
+// ========================================================================================================
+//
+// @file exercicio2c.c
+// @authors Guilherme Mafra (N USP: 11272015), Luigi Quaglio (N USP: 11800563) and Maíra Canal (N USP: 11819403)
+//
+// ========================================================================================================
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -80,6 +87,9 @@ unsigned h_mul(unsigned x, unsigned B)
 
 // DESENVOLVIDA PELO GRUPO ================================================================================
 
+/*
+ * @brief Aloca memória da tabela hash e preenche todos os enderecos com NULL.
+ */
 void criar_hash(Hash *hash, unsigned B)
 {
     hash->B = B;
@@ -88,6 +98,9 @@ void criar_hash(Hash *hash, unsigned B)
         hash->tabela[i] = NULL;
 }
 
+/*
+ * @brief Insere um novo nó na lista encadeada linear
+ */
 void inserir_node(No** raiz, string elemento) 
 {
     No* novo_no = (No*) malloc(sizeof(No));
@@ -97,6 +110,10 @@ void inserir_node(No** raiz, string elemento)
     *raiz = novo_no;
 }
 
+/*
+ * @brief Busca de forma recursiva um nó em uma lista encadeada
+ * @return Retorna -1 caso o nó não seja encontrado e retorna 0 caso o nó seja encontrado
+ */
 int buscar_node(No *no, string elemento) 
 {
     if (no == NULL)
@@ -106,6 +123,11 @@ int buscar_node(No *no, string elemento)
     return buscar_node(no->proximo, elemento);
 }
 
+/*
+ * @brief Insere elemento na tabela hash utilizando a funcao hash (unsigned *funcao_hash). Além disso, também
+ * realiza o tratamento de colisões por meio da técnica de encadeamento em lista linear não ordenada.
+ * @return Retorna 0 se não houve colisão e retorna 1 caso tenha havido colisão
+ */
 int inserir_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned)) 
 {
     int colisao = 0;
@@ -125,6 +147,11 @@ int inserir_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, 
     return colisao;
 }
 
+/*
+ * @brief Busca um elemento na tabela hash utilizando a funcão hash (unsigned *funcao_hash). Conforme a funcão inserir_hash,
+ * é utilizado a técnica de encadeamento em lista linear não ordenada.
+ * @return Retorna -1 se o elemento não existir. Caso o elemento exista, retorna 0.
+ */
 int buscar_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, unsigned)) 
 {
     unsigned key = converter(elemento);
@@ -133,6 +160,9 @@ int buscar_hash(Hash *hash, string elemento, unsigned (*funcao_hash)(unsigned, u
     return buscar_node(hash->tabela[pos], elemento);
 }
 
+/*
+ * @brief Libera a memória alocada na tabela hash e nas listas encadeadas.
+ */
 void liberar_hash(Hash *hash)
 {
     for (int i = 0; i < hash->B; i++) 
@@ -233,6 +263,10 @@ int main(int argc, char const *argv[])
     printf("Tempo de inserção   : %fs\n", tempo_insercao_h_mul);
     printf("Tempo de busca      : %fs\n", tempo_busca_h_mul);
     printf("Itens encontrados   : %d\n", encontrados_h_mul);
+
+    // Desaloca memória previamente alocada
+    free(insercoes);
+    free(consultas);
 
     return 0;
 }

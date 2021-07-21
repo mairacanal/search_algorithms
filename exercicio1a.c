@@ -1,3 +1,10 @@
+// ========================================================================================================
+//
+// @file exercicio1a.c
+// @authors Guilherme Mafra (N USP: 11272015), Luigi Quaglio (N USP: 11800563) and Maíra Canal (N USP: 11819403)
+//
+// ========================================================================================================
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -9,6 +16,15 @@ clock_t _ini, _fim;
 unsigned char typedef bool;
 #define TRUE  1
 #define FALSE 0
+
+// DESENVOLVIDA PELO GRUPO ================================================================================
+
+typedef struct {
+    int* vetor;
+    unsigned tamanho;
+} Vetor;
+
+// ========================================================================================================
 
 int* ler_inteiros(const char * arquivo, const int n)
 {
@@ -39,16 +55,16 @@ double finaliza_tempo()
 // DESENVOLVIDA PELO GRUPO ================================================================================
 
 /*
- * @brief Funcão que realiza uma busca sequencial simples no vetor (int* vetor) de tamanho (unsigned tamanho)
- * buscando o elemento (int elemento)
+ * @brief Funcão que realiza uma busca sequencial simples no vetor (int* Vetor->vetor) de tamanho (unsigned 
+ * Vetor->tamanho) buscando o elemento (int elemento)
  * @return Retorna -1 se o elemento não existir no vetor e, caso contrário, retorna a posicão do elemento no 
  * vetor
 */
 
-int busca_sequencial_simples(int* vetor, int elemento, unsigned tamanho) 
+int busca_sequencial_simples(Vetor *tabela, int elemento) 
 {
-    for (int i = 0; i < tamanho; i++) 
-        if (vetor[i] == elemento)
+    for (int i = 0; i < tabela->tamanho; i++) 
+        if (tabela->vetor[i] == elemento)
             return i;
     return -1;
 }
@@ -63,12 +79,18 @@ int main(int argc, char const *argv[])
     int* entradas = ler_inteiros("inteiros_entrada.txt", N);
     int* consultas = ler_inteiros("inteiros_busca.txt", N);
 
+    // Inicializa a struct Vetor
+    Vetor tabela;
+
+    tabela.vetor = entradas;
+    tabela.tamanho = N;
+
     // realiza busca sequencial
     inicia_tempo();
     for (int i = 0; i < N; i++) {
 
         // buscar o elemento consultas[i] na entrada
-        if (busca_sequencial_simples(entradas, consultas[i], N) != -1)
+        if (busca_sequencial_simples(&tabela, consultas[i]) != -1)
             encontrados++;
 
     }
@@ -77,6 +99,7 @@ int main(int argc, char const *argv[])
     printf("Tempo de busca    :\t%fs\n", tempo_busca);
     printf("Itens encontrados :\t%d\n", encontrados);
 
+    // Liberando memória alocada
     free(entradas);
     free(consultas);
 
