@@ -17,6 +17,15 @@ unsigned char typedef bool;
 #define TRUE  1
 #define FALSE 0
 
+// DESENVOLVIDA PELO GRUPO ================================================================================
+
+typedef struct {
+    int* vetor;
+    unsigned tamanho;
+} Vetor;
+
+// ========================================================================================================
+
 int* ler_inteiros(const char * arquivo, const int n)
 {
     FILE* f = fopen(arquivo, "r");
@@ -43,6 +52,39 @@ double finaliza_tempo()
     return ((double) (_fim - _ini)) / CLOCKS_PER_SEC;
 }
 
+// DESENVOLVIDA PELO GRUPO ================================================================================
+
+/*
+ * @brief Funcao de busca sequencial que realoca um elemento para uma posicao anterior durante as buscas
+ * @return Retorna -1 para valores não encontrados. Retorna a posicao de valores encontrados.
+ */
+int transposicao(Vetor *tabela, int buscado) 
+{
+    // guarda o valor fora do vetor para a realocacao
+    int aux;
+
+    for (int posicao = 0; posicao < tabela->tamanho; posicao++) {
+
+        // elemento encontrado, na posicao "posicao"
+        if (tabela->vetor[posicao] == buscado) {
+
+            // troca o valor pesquisado com o anterior para deixa-lo mais proximo ao inicio e acelerar futuras pesquisas
+            aux = tabela->vetor[posicao];
+            tabela->vetor[posicao] = tabela->vetor[posicao - 1];
+            tabela->vetor[posicao - 1] = aux;
+
+            // busca concluida e elemento encontrado
+            return posicao;
+
+        }
+
+    }
+
+    return -1;
+}
+
+// ========================================================================================================
+
 int main(int argc, char const *argv[])
 {
     const int N = 50000;
@@ -51,15 +93,28 @@ int main(int argc, char const *argv[])
     int* entradas = ler_inteiros("inteiros_entrada.txt", N);
     int* consultas = ler_inteiros("inteiros_busca.txt", N);
 
+    // Inicializa a struct Vetor
+    Vetor tabela;
+
+    tabela.vetor = entradas;
+    tabela.tamanho = N;
+
     // realiza busca sequencia com realocação
     inicia_tempo();
     for (int i = 0; i < N; i++) {
+
         // buscar o elemento consultas[i] na entrada
+        if (transposicao(&tabela, consultas[i]) != -1)
+            encontrados++;
+
     }
     double tempo_busca = finaliza_tempo();
 
     printf("Tempo de busca    :\t%fs\n", tempo_busca);
     printf("Itens encontrados :\t%d\n", encontrados);
+
+    free(entradas);
+    free(consultas);
 
     return 0;
 }
