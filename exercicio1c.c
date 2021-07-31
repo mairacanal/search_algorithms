@@ -69,9 +69,11 @@ int transposicao(Vetor *tabela, int buscado)
         if (tabela->vetor[posicao] == buscado) {
 
             // troca o valor pesquisado com o anterior para deixa-lo mais proximo ao inicio e acelerar futuras pesquisas
-            aux = tabela->vetor[posicao];
-            tabela->vetor[posicao] = tabela->vetor[posicao - 1];
-            tabela->vetor[posicao - 1] = aux;
+            if (posicao != 0) {
+                aux = tabela->vetor[posicao];
+                tabela->vetor[posicao] = tabela->vetor[posicao - 1];
+                tabela->vetor[posicao - 1] = aux;
+            }
 
             // busca concluida e elemento encontrado
             return posicao;
